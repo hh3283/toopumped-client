@@ -1,3 +1,3 @@
 export default function WorkoutPlanner() {
-  return <div>Dashboard</div>;
+  return <div>Workout Planner</div>;
 }
