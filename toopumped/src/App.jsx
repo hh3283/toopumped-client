@@ -8,6 +8,7 @@ import CalorieTracker from './pages/CalorieTracker';
 import Leaderboard from './pages/Leaderboard';
 import Friends from './pages/Friends';
 import Profile from './pages/Profile';
+import Register from './pages/Register';
 
 function ProtectedRoute({ children }) {
   const { user } = useAuth();
@@ -20,6 +21,7 @@ export default function App() {
       <AuthProvider>
         <Routes>
           <Route path="/login" element={<Login />} />
+          <Route path='/register' element={<Register/>}/>
           <Route path="/" element={
             <ProtectedRoute>
               <Layout />
