@@ -1,0 +1,99 @@
+/* =====================
+   Dashboard.css
+   ===================== */
+
+/* Page wrapper */
+.dashboard {
+  /* container za cijeli Dashboard */
+}
+
+/* Header */
+.dashboard__header {
+  margin-bottom: 28px;
+}
+
+.dashboard__title {
+  font-family: "Bebas Neue", sans-serif;
+  font-size: 32px;
+  letter-spacing: 1px;
+}
+
+.dashboard__subtitle {
+  font-size: 13px;
+  color: var(--text2);
+}
+
+/* Metrics grid (4 stupca) */
+.dashboard__metrics {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+/* Cards grid (2 stupca) */
+.dashboard__cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+/* Profile card header */
+.profile-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.profile-card__title {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* Profile info lista */
+.profile-card__list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.profile-card__row {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.profile-card__label {
+  font-size: 12px;
+  color: var(--text2);
+}
+
+.profile-card__value {
+  font-size: 13px;
+  font-weight: 500;
+}
+
+/* Quick actions card */
+.actions-card__title {
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+.actions-card__list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.actions-card__btn {
+  width: 100%;
+}
+
+/* Loading state */
+.dashboard__loading {
+  padding: 32px;
+}
