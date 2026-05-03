@@ -6,11 +6,31 @@ import Badge from "../components/ui/Badge";
 import Button from "../components/ui/Button";
 import "../components/css/WorkoutPlanner.css";
 
-const DAYS = ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"];
-const DAY_LABELS = { MONDAY: "Mon", TUESDAY: "Tue", WEDNESDAY: "Wed", THURSDAY: "Thu", FRIDAY: "Fri", SATURDAY: "Sat", SUNDAY: "Sun" };
-const DIFFICULTY_VARIANT = { BEGINNER: "green", INTERMEDIATE: "orange", ADVANCED: "red" };
+const DAYS = [
+  "MONDAY",
+  "TUESDAY",
+  "WEDNESDAY",
+  "THURSDAY",
+  "FRIDAY",
+  "SATURDAY",
+  "SUNDAY",
+];
+const DAY_LABELS = {
+  MONDAY: "Mon",
+  TUESDAY: "Tue",
+  WEDNESDAY: "Wed",
+  THURSDAY: "Thu",
+  FRIDAY: "Fri",
+  SATURDAY: "Sat",
+  SUNDAY: "Sun",
+};
+const DIFFICULTY_VARIANT = {
+  BEGINNER: "green",
+  INTERMEDIATE: "orange",
+  ADVANCED: "red",
+};
 
-// ─── Modal: Create Workout Plan ─────────────────────────────────────────────
+// Modal: Create Workout Plan
 function CreatePlanModal({ onClose, onCreated, userId }) {
   const [name, setName] = useState("");
   const [duration, setDuration] = useState(4);
@@ -20,7 +40,12 @@ function CreatePlanModal({ onClose, onCreated, userId }) {
     if (!name.trim()) return;
     setLoading(true);
     try {
-      const res = await api.post("/workout-plan", { userId, name, duration, days: [] });
+      const res = await api.post("/workout-plan", {
+        userId,
+        name,
+        duration,
+        days: [],
+      });
       onCreated(res.data);
       onClose();
     } catch (e) {
@@ -35,7 +60,9 @@ function CreatePlanModal({ onClose, onCreated, userId }) {
       <div className="modal" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
           <div className="modal-title">New Workout Plan</div>
-          <button className="modal-close" onClick={onClose}>✕</button>
+          <button className="modal-close" onClick={onClose}>
+            ✕
+          </button>
         </div>
         <div className="modal-body">
           <div className="form-group">
@@ -61,7 +88,9 @@ function CreatePlanModal({ onClose, onCreated, userId }) {
           </div>
         </div>
         <div className="modal-footer">
-          <Button variant="ghost" onClick={onClose}>Cancel</Button>
+          <Button variant="ghost" onClick={onClose}>
+            Cancel
+          </Button>
           <Button onClick={handleSubmit} disabled={loading || !name.trim()}>
             {loading ? "Creating…" : "Create Plan"}
           </Button>
@@ -71,7 +100,7 @@ function CreatePlanModal({ onClose, onCreated, userId }) {
   );
 }
 
-// ─── Modal: Create Workout (inside a plan) ──────────────────────────────────
+// Modal: Create Workout (inside a plan)
 function CreateWorkoutModal({ onClose, onCreated, userId }) {
   const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
@@ -95,7 +124,9 @@ function CreateWorkoutModal({ onClose, onCreated, userId }) {
       <div className="modal" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
           <div className="modal-title">New Workout</div>
-          <button className="modal-close" onClick={onClose}>✕</button>
+          <button className="modal-close" onClick={onClose}>
+            ✕
+          </button>
         </div>
         <div className="modal-body">
           <div className="form-group">
@@ -110,7 +141,9 @@ function CreateWorkoutModal({ onClose, onCreated, userId }) {
           </div>
         </div>
         <div className="modal-footer">
-          <Button variant="ghost" onClick={onClose}>Cancel</Button>
+          <Button variant="ghost" onClick={onClose}>
+            Cancel
+          </Button>
           <Button onClick={handleSubmit} disabled={loading || !name.trim()}>
             {loading ? "Creating…" : "Create"}
           </Button>
@@ -120,7 +153,7 @@ function CreateWorkoutModal({ onClose, onCreated, userId }) {
   );
 }
 
-// ─── Modal: Add Exercise to Workout ─────────────────────────────────────────
+// Modal: Add Exercise to Workout
 function AddExerciseModal({ workoutId, onClose, onAdded }) {
   const [exercises, setExercises] = useState([]);
   const [search, setSearch] = useState("");
@@ -130,11 +163,14 @@ function AddExerciseModal({ workoutId, onClose, onAdded }) {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    api.get("/exercise").then((r) => setExercises(r.data)).catch(console.error);
+    api
+      .get("/exercise")
+      .then((r) => setExercises(r.data))
+      .catch(console.error);
   }, []);
 
   const filtered = exercises.filter((e) =>
-    e.name?.toLowerCase().includes(search.toLowerCase())
+    e.name?.toLowerCase().includes(search.toLowerCase()),
   );
 
   const handleAdd = async () => {
@@ -162,7 +198,9 @@ function AddExerciseModal({ workoutId, onClose, onAdded }) {
       <div className="modal modal-lg" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
           <div className="modal-title">Add Exercise</div>
-          <button className="modal-close" onClick={onClose}>✕</button>
+          <button className="modal-close" onClick={onClose}>
+            ✕
+          </button>
         </div>
         <div className="modal-body">
           <input
@@ -186,11 +224,20 @@ function AddExerciseModal({ workoutId, onClose, onAdded }) {
                     {ex.muscleGroup?.name ? ` · ${ex.muscleGroup.name}` : ""}
                   </div>
                 </div>
-                {selected?.exerciseid === ex.exerciseid && <span className="check">✓</span>}
+                {selected?.exerciseid === ex.exerciseid && (
+                  <span className="check">✓</span>
+                )}
               </div>
             ))}
             {filtered.length === 0 && (
-              <div style={{ padding: "20px", textAlign: "center", color: "var(--text2)", fontSize: 13 }}>
+              <div
+                style={{
+                  padding: "20px",
+                  textAlign: "center",
+                  color: "var(--text2)",
+                  fontSize: 13,
+                }}
+              >
                 No exercises found
               </div>
             )}
@@ -199,17 +246,33 @@ function AddExerciseModal({ workoutId, onClose, onAdded }) {
             <div className="sets-reps-row">
               <div className="form-group" style={{ flex: 1 }}>
                 <label className="form-label">Sets</label>
-                <input className="form-input" type="number" min={1} max={10} value={sets} onChange={(e) => setSets(Number(e.target.value))} />
+                <input
+                  className="form-input"
+                  type="number"
+                  min={1}
+                  max={10}
+                  value={sets}
+                  onChange={(e) => setSets(Number(e.target.value))}
+                />
               </div>
               <div className="form-group" style={{ flex: 1 }}>
                 <label className="form-label">Reps</label>
-                <input className="form-input" type="number" min={1} max={100} value={reps} onChange={(e) => setReps(Number(e.target.value))} />
+                <input
+                  className="form-input"
+                  type="number"
+                  min={1}
+                  max={100}
+                  value={reps}
+                  onChange={(e) => setReps(Number(e.target.value))}
+                />
               </div>
             </div>
           )}
         </div>
         <div className="modal-footer">
-          <Button variant="ghost" onClick={onClose}>Cancel</Button>
+          <Button variant="ghost" onClick={onClose}>
+            Cancel
+          </Button>
           <Button onClick={handleAdd} disabled={!selected || loading}>
             {loading ? "Adding…" : "Add Exercise"}
           </Button>
@@ -219,7 +282,7 @@ function AddExerciseModal({ workoutId, onClose, onAdded }) {
   );
 }
 
-// ─── Workout Detail View ─────────────────────────────────────────────────────
+//  Workout Detail View
 function WorkoutDetail({ workout, onBack, userId }) {
   const [exercises, setExercises] = useState([]);
   const [exerciseDetails, setExerciseDetails] = useState({});
@@ -233,9 +296,11 @@ function WorkoutDetail({ workout, onBack, userId }) {
   const fetchExercises = async () => {
     setLoading(true);
     try {
-      const res = await api.get(`/workout-exercises/workout/${workout.workoutId || workout.id}`);
+      const res = await api.get(
+        `/workout-exercises/workout/${workout.workoutId || workout.id}`,
+      );
       setExercises(res.data);
-      // fetch exercise details for each
+      // tyler durden - fetch exercise details for each
       const details = {};
       await Promise.all(
         res.data.map(async (we) => {
@@ -243,7 +308,7 @@ function WorkoutDetail({ workout, onBack, userId }) {
             const ex = await api.get(`/exercise/${we.exerciseId}`);
             details[we.exerciseId] = ex.data;
           } catch {}
-        })
+        }),
       );
       setExerciseDetails(details);
     } catch (e) {
@@ -272,10 +337,14 @@ function WorkoutDetail({ workout, onBack, userId }) {
   return (
     <div>
       <div className="detail-header">
-        <button className="back-btn" onClick={onBack}>← Back</button>
+        <button className="back-btn" onClick={onBack}>
+          ← Back
+        </button>
         <div>
           <div className="page-title">{workout.name}</div>
-          <div className="page-sub">{exercises.length} exercise{exercises.length !== 1 ? "s" : ""}</div>
+          <div className="page-sub">
+            {exercises.length} exercise{exercises.length !== 1 ? "s" : ""}
+          </div>
         </div>
         <Button onClick={() => setShowAddModal(true)}>+ Add Exercise</Button>
       </div>
@@ -297,20 +366,35 @@ function WorkoutDetail({ workout, onBack, userId }) {
               <div key={we.id || i} className="exercise-card">
                 <div className="ex-top">
                   <span className="ex-order">#{i + 1}</span>
-                  <button className="ex-delete" onClick={() => handleDelete(we.id)}>✕</button>
+                  <button
+                    className="ex-delete"
+                    onClick={() => handleDelete(we.id)}
+                  >
+                    ✕
+                  </button>
                 </div>
-                <div className="ex-name">{ex?.name || `Exercise #${we.exerciseId}`}</div>
-                <div className="ex-detail">{we.sets} sets × {we.reps} reps</div>
+                <div className="ex-name">
+                  {ex?.name || `Exercise #${we.exerciseId}`}
+                </div>
+                <div className="ex-detail">
+                  {we.sets} sets × {we.reps} reps
+                </div>
                 {ex && (
                   <div className="ex-tags">
                     {ex.difficulty && (
-                      <span className={`badge badge-${DIFFICULTY_VARIANT[ex.difficulty] || "neutral"}`}>
+                      <span
+                        className={`badge badge-${DIFFICULTY_VARIANT[ex.difficulty] || "neutral"}`}
+                      >
                         {ex.difficulty}
                       </span>
                     )}
-                    {ex.type && <span className="badge badge-blue">{ex.type}</span>}
+                    {ex.type && (
+                      <span className="badge badge-blue">{ex.type}</span>
+                    )}
                     {ex.muscleGroup?.name && (
-                      <span className="badge badge-neutral">{ex.muscleGroup.name}</span>
+                      <span className="badge badge-neutral">
+                        {ex.muscleGroup.name}
+                      </span>
                     )}
                   </div>
                 )}
@@ -331,7 +415,7 @@ function WorkoutDetail({ workout, onBack, userId }) {
   );
 }
 
-// ─── Plan Detail View ────────────────────────────────────────────────────────
+// Plan Detail View
 function PlanDetail({ plan, onBack, userId }) {
   const [workouts, setWorkouts] = useState([]);
   const [showCreateWorkout, setShowCreateWorkout] = useState(false);
@@ -348,7 +432,7 @@ function PlanDetail({ plan, onBack, userId }) {
       const res = await api.get("/workout");
       // WorkoutMapper maps userId from entity — filter to current user's workouts
       const myWorkouts = res.data.filter(
-        (w) => String(w.userId) === String(userId)
+        (w) => String(w.userId) === String(userId),
       );
       setWorkouts(myWorkouts);
     } catch (e) {
@@ -371,12 +455,18 @@ function PlanDetail({ plan, onBack, userId }) {
   return (
     <div>
       <div className="detail-header">
-        <button className="back-btn" onClick={onBack}>← Back</button>
+        <button className="back-btn" onClick={onBack}>
+          ← Back
+        </button>
         <div>
           <div className="page-title">{plan.name}</div>
-          <div className="page-sub">{plan.duration} weeks · {workouts.length} workouts</div>
+          <div className="page-sub">
+            {plan.duration} weeks · {workouts.length} workouts
+          </div>
         </div>
-        <Button onClick={() => setShowCreateWorkout(true)}>+ New Workout</Button>
+        <Button onClick={() => setShowCreateWorkout(true)}>
+          + New Workout
+        </Button>
       </div>
 
       {loading ? (
@@ -385,15 +475,25 @@ function PlanDetail({ plan, onBack, userId }) {
         <div className="empty-state">
           <div className="empty-icon">📋</div>
           <div className="empty-title">No workouts yet</div>
-          <div className="empty-sub">Create your first workout for this plan</div>
-          <Button onClick={() => setShowCreateWorkout(true)}>+ New Workout</Button>
+          <div className="empty-sub">
+            Create your first workout for this plan
+          </div>
+          <Button onClick={() => setShowCreateWorkout(true)}>
+            + New Workout
+          </Button>
         </div>
       ) : (
         <div className="plans-grid">
           {workouts.map((w) => (
-            <div key={w.workoutId || w.id} className="plan-card" onClick={() => setSelectedWorkout(w)}>
+            <div
+              key={w.workoutId || w.id}
+              className="plan-card"
+              onClick={() => setSelectedWorkout(w)}
+            >
               <div className="plan-card-name">{w.name}</div>
-              <div className="plan-card-meta">{w.exercises?.length ?? 0} exercises</div>
+              <div className="plan-card-meta">
+                {w.exercises?.length ?? 0} exercises
+              </div>
               <div className="plan-card-footer">
                 <Button variant="ghost" style={{ width: "100%", fontSize: 12 }}>
                   View Exercises →
@@ -401,7 +501,10 @@ function PlanDetail({ plan, onBack, userId }) {
               </div>
             </div>
           ))}
-          <div className="plan-card plan-card-add" onClick={() => setShowCreateWorkout(true)}>
+          <div
+            className="plan-card plan-card-add"
+            onClick={() => setShowCreateWorkout(true)}
+          >
             <div className="plan-card-add-inner">
               <div style={{ fontSize: 28, marginBottom: 6 }}>+</div>
               <div style={{ fontSize: 13 }}>New Workout</div>
@@ -424,7 +527,7 @@ function PlanDetail({ plan, onBack, userId }) {
   );
 }
 
-// ─── Sessions / History Tab ──────────────────────────────────────────────────
+// Sessions / History Tab
 function HistoryTab({ userId }) {
   const [sessions, setSessions] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -437,7 +540,8 @@ function HistoryTab({ userId }) {
       .finally(() => setLoading(false));
   }, [userId]);
 
-  if (loading) return <div style={{ padding: 32, color: "var(--text2)" }}>Loading…</div>;
+  if (loading)
+    return <div style={{ padding: 32, color: "var(--text2)" }}>Loading…</div>;
 
   if (sessions.length === 0) {
     return (
@@ -457,11 +561,15 @@ function HistoryTab({ userId }) {
           <div className="history-content">
             <div className="history-name">Session #{s.id}</div>
             <div className="history-meta">
-              {s.startTime && <span>{new Date(s.startTime).toLocaleDateString()}</span>}
+              {s.startTime && (
+                <span>{new Date(s.startTime).toLocaleDateString()}</span>
+              )}
               {s.xp && <span className="history-xp">+{s.xp} XP</span>}
             </div>
           </div>
-          <span className={`badge ${s.endTime ? "badge-green" : "badge-orange"}`}>
+          <span
+            className={`badge ${s.endTime ? "badge-green" : "badge-orange"}`}
+          >
             {s.endTime ? "Done" : "Active"}
           </span>
         </div>
@@ -470,7 +578,7 @@ function HistoryTab({ userId }) {
   );
 }
 
-// ─── Main Workout Planner ────────────────────────────────────────────────────
+// Main Workout Planner
 export default function WorkoutPlanner() {
   const { user } = useAuth();
   const [tab, setTab] = useState("plans");
@@ -532,10 +640,16 @@ export default function WorkoutPlanner() {
 
       {/* Tabs */}
       <div className="tab-bar">
-        <button className={`tab-btn${tab === "plans" ? " active" : ""}`} onClick={() => setTab("plans")}>
+        <button
+          className={`tab-btn${tab === "plans" ? " active" : ""}`}
+          onClick={() => setTab("plans")}
+        >
           My Plans
         </button>
-        <button className={`tab-btn${tab === "history" ? " active" : ""}`} onClick={() => setTab("history")}>
+        <button
+          className={`tab-btn${tab === "history" ? " active" : ""}`}
+          onClick={() => setTab("history")}
+        >
           History
         </button>
       </div>
@@ -550,25 +664,28 @@ export default function WorkoutPlanner() {
               {plans.map((plan) => {
                 const planId = plan.id || plan.wpId;
                 return (
-                <div
-                  key={planId}
-                  className="plan-card"
-                  onClick={() => setSelectedPlan(plan)}
-                >
-                  <button
-                    className="plan-card-delete"
-                    onClick={(e) => handleDeletePlan(planId, e)}
+                  <div
+                    key={planId}
+                    className="plan-card"
+                    onClick={() => setSelectedPlan(plan)}
                   >
-                    ✕
-                  </button>
-                  <div className="plan-card-name">{plan.name}</div>
-                  <div className="plan-card-meta">{plan.duration} weeks</div>
-                  <div className="plan-card-footer">
-                    <Button variant="ghost" style={{ width: "100%", fontSize: 12 }}>
-                      Open Plan →
-                    </Button>
+                    <button
+                      className="plan-card-delete"
+                      onClick={(e) => handleDeletePlan(planId, e)}
+                    >
+                      ✕
+                    </button>
+                    <div className="plan-card-name">{plan.name}</div>
+                    <div className="plan-card-meta">{plan.duration} weeks</div>
+                    <div className="plan-card-footer">
+                      <Button
+                        variant="ghost"
+                        style={{ width: "100%", fontSize: 12 }}
+                      >
+                        Open Plan →
+                      </Button>
+                    </div>
                   </div>
-                </div>
                 );
               })}
 

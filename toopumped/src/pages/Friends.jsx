@@ -14,7 +14,7 @@ function Avatar({ username }) {
   return <div className="avatar">{username?.[0]?.toUpperCase() ?? "?"}</div>;
 }
 
-// Add Friend Modal
+// Add Friend Modal 
 function AddFriendModal({ userId, onClose, onSent }) {
   const [users, setUsers] = useState([]);
   const [search, setSearch] = useState("");
@@ -29,13 +29,17 @@ function AddFriendModal({ userId, onClose, onSent }) {
       .catch(console.error);
   }, []);
 
-  const filtered = users.filter(
-    (u) =>
-      u.userId !== userId &&
-      (u.username?.toLowerCase().includes(search.toLowerCase()) ||
-        u.firstname?.toLowerCase().includes(search.toLowerCase()) ||
-        u.lastname?.toLowerCase().includes(search.toLowerCase())),
-  );
+  const filtered = users.filter((u) => {
+    const uId = u.userId ?? u.id;
+    if (uId == userId) return false;
+    const q = search.toLowerCase();
+    if (!q) return true;
+    return (
+      u.username?.toLowerCase().includes(q) ||
+      u.firstname?.toLowerCase().includes(q) ||
+      u.lastname?.toLowerCase().includes(q)
+    );
+  });
 
   const handleSend = async () => {
     if (!selected) return;
@@ -43,7 +47,7 @@ function AddFriendModal({ userId, onClose, onSent }) {
     setError("");
     try {
       const res = await api.post(`/friends/${userId}/request`, {
-        friendUserId: selected.userId,
+        friendUserId: selected.userId ?? selected.id,
       });
       onSent(res.data);
       onClose();
@@ -80,10 +84,10 @@ function AddFriendModal({ userId, onClose, onSent }) {
             {filtered.length === 0 && (
               <div className="user-search-empty">No users found</div>
             )}
-            {filtered.map((u) => (
+            {filtered.map((u, i) => (
               <div
-                key={u.userId}
-                className={`user-search-item${selected?.userId === u.userId ? " selected" : ""}`}
+                key={u.userId ?? u.id ?? i}
+                className={`user-search-item${selected === u ? " selected" : ""}`}
                 onClick={() => setSelected(u)}
               >
                 <Avatar username={u.username} />
@@ -93,9 +97,7 @@ function AddFriendModal({ userId, onClose, onSent }) {
                     {u.firstname} {u.lastname}
                   </div>
                 </div>
-                {selected?.userId === u.userId && (
-                  <span className="check">✓</span>
-                )}
+                {selected === u && <span className="check">✓</span>}
               </div>
             ))}
           </div>
@@ -114,14 +116,15 @@ function AddFriendModal({ userId, onClose, onSent }) {
   );
 }
 
-// ─── Main Friends Page ────────────────────────────────────────────────────────
+// Main Friends Page 
 export default function Friends() {
   const { user } = useAuth();
   const uid = user?.userId ?? user?.id;
 
   const [tab, setTab] = useState("friends");
   const [friends, setFriends] = useState([]);
-  const [pending, setPending] = useState([]);
+  const [pending, setPending] = useState([]); // incoming
+  const [sent, setSent] = useState([]); // outgoing
   const [showModal, setShowModal] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -129,12 +132,14 @@ export default function Friends() {
     if (!uid) return;
     setLoading(true);
     try {
-      const [friendsRes, pendingRes] = await Promise.all([
+      const [friendsRes, pendingRes, sentRes] = await Promise.all([
         api.get(`/friends/${uid}`),
         api.get(`/friends/${uid}/pending`),
+        api.get(`/friends/${uid}/sent`),
       ]);
       setFriends(friendsRes.data);
       setPending(pendingRes.data);
+      setSent(sentRes.data);
     } catch (e) {
       console.error(e);
     } finally {
@@ -175,7 +180,8 @@ export default function Friends() {
           <div className="page-title">Friends</div>
           <div className="page-sub">
             {friends.length} friend{friends.length !== 1 ? "s" : ""}
-            {pendingCount > 0 && ` · ${pendingCount} pending`}
+            {pendingCount > 0 && ` · ${pendingCount} incoming`}
+            {sent.length > 0 && ` · ${sent.length} sent`}
           </div>
         </div>
         <Button onClick={() => setShowModal(true)}>+ Add Friend</Button>
@@ -196,10 +202,17 @@ export default function Friends() {
           className={`tab-btn${tab === "pending" ? " active" : ""}`}
           onClick={() => setTab("pending")}
         >
-          Requests
+          Incoming
           {pendingCount > 0 && (
             <span className="tab-count tab-count-orange">{pendingCount}</span>
           )}
+        </button>
+        <button
+          className={`tab-btn${tab === "sent" ? " active" : ""}`}
+          onClick={() => setTab("sent")}
+        >
+          Sent
+          {sent.length > 0 && <span className="tab-count">{sent.length}</span>}
         </button>
       </div>
 
@@ -251,6 +264,60 @@ export default function Friends() {
                           className="friend-remove"
                           onClick={() => handleRemove(f.friendId)}
                           title="Remove friend"
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </>
+          )}
+
+          {/* Sent Tab */}
+          {tab === "sent" && (
+            <>
+              {sent.length === 0 ? (
+                <div className="empty-state">
+                  <div className="empty-icon">📤</div>
+                  <div className="empty-title">No sent requests</div>
+                  <div className="empty-sub">
+                    Send a request to connect with someone
+                  </div>
+                  <Button onClick={() => setShowModal(true)}>
+                    + Add Friend
+                  </Button>
+                </div>
+              ) : (
+                <div className="friends-grid">
+                  {sent.map((f) => (
+                    <div key={f.friendId} className="friend-card">
+                      <Avatar username={f.friendUsername} />
+                      <div className="friend-info">
+                        <div className="friend-username">
+                          {f.friendUsername}
+                        </div>
+                        <div className="friend-since">
+                          Sent{" "}
+                          {f.createdAt
+                            ? new Date(f.createdAt).toLocaleDateString(
+                                "en-US",
+                                {
+                                  month: "short",
+                                  day: "numeric",
+                                  year: "numeric",
+                                },
+                              )
+                            : "—"}
+                        </div>
+                      </div>
+                      <div className="friend-actions">
+                        <span className="badge badge-orange">Pending</span>
+                        <button
+                          className="friend-remove"
+                          onClick={() => handleRemove(f.friendId)}
+                          title="Cancel request"
                         >
                           ✕
                         </button>

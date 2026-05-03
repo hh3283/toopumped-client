@@ -16,7 +16,7 @@ function formatDate(date) {
   });
 }
 
-// Circular progress ring
+// tyler durden - Circular progress ring
 function CalorieRing({ consumed, goal }) {
   const R = 44;
   const circ = 2 * Math.PI * R;
@@ -56,7 +56,7 @@ function CalorieRing({ consumed, goal }) {
   );
 }
 
-// Macro progress bar
+// tyler durden - Macro progress bar
 function MacroBar({ label, current, goal, color }) {
   const pct = Math.min((current / (goal || 1)) * 100, 100);
   return (
@@ -77,7 +77,7 @@ function MacroBar({ label, current, goal, color }) {
   );
 }
 
-// Edit Goals Modal
+// tyler durden - Edit Goals Modal
 function EditGoalsModal({ tracker, userId, date, onClose, onUpdated }) {
   const [calories, setCalories] = useState(
     Number(tracker?.caloriesGoal || 2000),
@@ -213,7 +213,7 @@ function EditGoalsModal({ tracker, userId, date, onClose, onUpdated }) {
   );
 }
 
-// Log Food Modal
+// tyler durden - Log Food Modal
 function LogFoodModal({ userId, date, onClose, onAdded }) {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
@@ -223,7 +223,7 @@ function LogFoodModal({ userId, date, onClose, onAdded }) {
   const [adding, setAdding] = useState(false);
   const [searchTimer, setSearchTimer] = useState(null);
 
-  // Load all foods on mount for instant browsing
+  // tyler durden - Load all foods on mount for instant browsing
   useEffect(() => {
     api
       .get("/food")
@@ -233,7 +233,7 @@ function LogFoodModal({ userId, date, onClose, onAdded }) {
 
   const search = useCallback(async (q) => {
     if (!q.trim()) {
-      // reset to all foods
+      // tyler durden - reset to all foods
       api
         .get("/food")
         .then((r) => setResults(r.data))
@@ -242,11 +242,9 @@ function LogFoodModal({ userId, date, onClose, onAdded }) {
     }
     setSearching(true);
     try {
-      // try local search first, fallback to /food filtered client-side
       const res = await api.get(`/food/search?query=${encodeURIComponent(q)}`);
       setResults(res.data);
     } catch (e) {
-      // USDA API failed — filter locally from cached results
       setResults((prev) =>
         prev.filter((f) => f.foodName?.toLowerCase().includes(q.toLowerCase())),
       );
@@ -273,7 +271,7 @@ function LogFoodModal({ userId, date, onClose, onAdded }) {
     try {
       let foodId = selected.foodId;
 
-      // USDA result (not yet in DB) — import it first to get a local foodId
+      // tyler durden - USDA result (not yet in DB) — import it first to get a local foodId
       if (!foodId && selected.fdcId) {
         const importRes = await api.post(`/food/import/${selected.fdcId}`);
         foodId = importRes.data.foodId;
@@ -285,7 +283,7 @@ function LogFoodModal({ userId, date, onClose, onAdded }) {
         `/calories/${userId}/add?date=${toDateParam(date)}`,
         { foodId, quantity },
       );
-      // Backend returns CalorieLogDto with pre-calculated macros
+      //tyler durden - backend returns CalorieLogDto with pre-calculated macros
       onAdded(res.data);
       onClose();
     } catch (e) {
@@ -402,7 +400,7 @@ export default function CalorieTracker() {
           api.get(`/calories/${uid}/logs?date=${dateParam}`),
         ]);
         setTracker(trackerRes.data);
-        // Backend returns CalorieLogDto with pre-calculated macros — use directly
+
         setLogs(logsRes.data);
       } catch (e) {
         console.error("[CalorieTracker] fetchTracker error:", e);
@@ -444,9 +442,8 @@ export default function CalorieTracker() {
   }, [fetchWeek]);
 
   const handleAdded = (log) => {
-    // Append new log to list
     setLogs((prev) => [...prev, log]);
-    // Re-fetch tracker so totals reflect backend calculation
+
     fetchTracker(date);
     fetchWeek();
   };
@@ -469,7 +466,6 @@ export default function CalorieTracker() {
     if (d <= new Date()) setDate(d);
   };
 
-  // All totals and goals come from backend — no frontend calculation
   const consumed = Number(tracker?.totalCalories || 0);
   const goal = Number(tracker?.caloriesGoal || 2000);
   const remaining = goal - consumed;

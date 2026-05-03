@@ -54,7 +54,7 @@ export default function Dashboard() {
         <MetricCard
           label="🏆 Rank"
           value="#1"
-          badge="leaderboard"
+          badge="copetitions"
           badgeType="neutral"
         />
       </div>
@@ -106,9 +106,9 @@ export default function Dashboard() {
             <Button
               variant="ghost"
               className="actions-card__btn"
-              onClick={() => navigate("/leaderboard")}
+              onClick={() => navigate("/competitions")}
             >
-              📊 Leaderboard
+              📊 Competitions
             </Button>
           </div>
         </Card>
