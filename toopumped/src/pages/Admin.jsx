@@ -62,6 +62,7 @@ function UsersTab() {
   };
 
   const handleDelete = async (userId) => {
+    const token = localStorage.getItem("token");
     try {
       await api.delete(`/users/${userId}`);
       setUsers((prev) => prev.filter((u) => u.id !== userId));

@@ -1,3 +1,4 @@
+import { useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import api from "../api/axios";
@@ -5,6 +6,7 @@ import Card from "../components/ui/Card";
 import Badge from "../components/ui/Badge";
 import Button from "../components/ui/Button";
 import "../components/css/WorkoutPlanner.css";
+import ActiveWorkout from "./ActiveWorkout";
 
 const DAYS = [
   "MONDAY",
@@ -421,6 +423,7 @@ function PlanDetail({ plan, onBack, userId }) {
   const [showCreateWorkout, setShowCreateWorkout] = useState(false);
   const [selectedWorkout, setSelectedWorkout] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [activeWorkout, setActiveWorkout] = useState(null);
 
   useEffect(() => {
     fetchWorkouts();
@@ -430,10 +433,12 @@ function PlanDetail({ plan, onBack, userId }) {
     setLoading(true);
     try {
       const res = await api.get("/workout");
-      // WorkoutMapper maps userId from entity — filter to current user's workouts
+      console.log("All workouts:", res.data);
+      console.log("userId filter:", userId);
       const myWorkouts = res.data.filter(
         (w) => String(w.userId) === String(userId),
       );
+      console.log("My workouts:", myWorkouts);
       setWorkouts(myWorkouts);
     } catch (e) {
       console.error(e);
@@ -441,6 +446,18 @@ function PlanDetail({ plan, onBack, userId }) {
       setLoading(false);
     }
   };
+
+  if (activeWorkout) {
+    return (
+      <ActiveWorkout
+        workout={activeWorkout}
+        plan={plan}
+        userId={userId}
+        onFinish={() => setActiveWorkout(null)}
+        onCancel={() => setActiveWorkout(null)}
+      />
+    );
+  }
 
   if (selectedWorkout) {
     return (
@@ -497,6 +514,15 @@ function PlanDetail({ plan, onBack, userId }) {
               <div className="plan-card-footer">
                 <Button variant="ghost" style={{ width: "100%", fontSize: 12 }}>
                   View Exercises →
+                </Button>
+                <Button
+                  style={{ flex: 1, fontSize: 12 }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setActiveWorkout(w);
+                  }}
+                >
+                  ▶ Start
                 </Button>
               </div>
             </div>
@@ -586,6 +612,7 @@ export default function WorkoutPlanner() {
   const [selectedPlan, setSelectedPlan] = useState(null);
   const [showCreatePlan, setShowCreatePlan] = useState(false);
   const [loading, setLoading] = useState(true);
+  const location = useLocation();
 
   const uid = user?.userId ?? user?.id;
 
@@ -601,13 +628,33 @@ export default function WorkoutPlanner() {
       .finally(() => setLoading(false));
   }, [uid]);
 
+  useEffect(() => {
+    if (location.state?.openPlan && plans.length > 0) {
+      const target = plans.find(
+        (p) =>
+          (p.wpId ?? p.id) ===
+          (location.state.openPlan.wpId ?? location.state.openPlan.id),
+      );
+      if (target) setSelectedPlan(target);
+    }
+  }, [plans, location.state]);
+
+  useEffect(() => {
+    if (!location.state?.openPlan || plans.length === 0) return;
+
+    const target = plans.find(
+      (p) =>
+        (p.wpId ?? p.id) ===
+        (location.state.openPlan.wpId ?? location.state.openPlan.id),
+    );
+    if (target) setSelectedPlan(target);
+  }, [plans, location.state]);
+
   const handleDeletePlan = async (planId, e) => {
     e.stopPropagation();
     try {
       await api.delete(`/workout-plan/${planId}`);
-      setPlans((prev) =>
-        prev.filter((p) => (p.id ?? p.wpId) !== planId)
-      );
+      setPlans((prev) => prev.filter((p) => (p.id ?? p.wpId) !== planId));
     } catch (err) {
       console.error(err);
     }
@@ -653,9 +700,7 @@ export default function WorkoutPlanner() {
       {tab === "plans" && (
         <>
           {loading ? (
-            <div style={{ padding: 32, color: "var(--text2)" }}>
-              Loading…
-            </div>
+            <div style={{ padding: 32, color: "var(--text2)" }}>Loading…</div>
           ) : (
             <div className="plans-grid">
               {plans.map((plan, index) => {
@@ -675,9 +720,7 @@ export default function WorkoutPlanner() {
                     </button>
 
                     <div className="plan-card-name">{plan.name}</div>
-                    <div className="plan-card-meta">
-                      {plan.duration} weeks
-                    </div>
+                    <div className="plan-card-meta">{plan.duration} weeks</div>
 
                     <div className="plan-card-footer">
                       <Button
@@ -703,6 +746,19 @@ export default function WorkoutPlanner() {
             </div>
           )}
         </>
+      )}
+
+      {tab === "history" && <HistoryTab userId={uid} />}
+
+      {showCreatePlan && (
+        <CreatePlanModal
+          userId={uid}
+          onClose={() => setShowCreatePlan(false)}
+          onCreated={(plan) => {
+            setPlans((prev) => [...prev, plan]);
+            setShowCreatePlan(false);
+          }}
+        />
       )}
     </div>
   );
