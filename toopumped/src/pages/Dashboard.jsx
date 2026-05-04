@@ -1,117 +1,175 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import api from "../api/axios";
-import Card from "../components/ui/Card";
-import Badge from "../components/ui/Badge";
-import Button from "../components/ui/Button";
-import MetricCard from "../components/ui/MetricCard";
 import "../components/css/Dashboard.css";
+
+function formatRank(rank) {
+  if (!rank) return "";
+  return rank
+    .toLowerCase()
+    .split("_")
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(" ");
+}
 
 export default function Dashboard() {
   const { user } = useAuth();
-  const navigate = useNavigate();
-  const [userData, setUserData] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const uid = user?.userId ?? user?.id;
+
+  const [rankData, setRankData] = useState(null);
+  const [friends, setFriends] = useState([]);
+  const [competitions, setCompetitions] = useState([]);
+  const [plans, setPlans] = useState([]);
 
   useEffect(() => {
-    if (!user) return;
-    api
-      .get(`/users/${user.userId}`)
-      .then((res) => setUserData(res.data))
-      .catch((err) => console.error(err))
-      .finally(() => setLoading(false));
-  }, [user]);
+    if (!uid) return;
 
-  if (loading) return <div className="dashboard__loading">Loading...</div>;
+    // Rank
+    api.get(`/rank/${uid}`).then((r) => setRankData(r.data));
+
+    // Friends (limit 3)
+    api.get(`/friends/${uid}`).then((r) =>
+      setFriends(r.data.slice(0, 3))
+    );
+
+    // Competitions (limit 3 active)
+    api.get("/competitions").then((r) =>
+      setCompetitions(r.data.slice(0, 3))
+    );
+
+    // Plans (limit 3)
+    api.get(`/workout-plan/user/${uid}`).then((r) =>
+      setPlans(r.data.slice(0, 3))
+    );
+  }, [uid]);
 
   return (
     <div className="dashboard">
-      <div className="dashboard__header">
-        <div className="dashboard__title">Dashboard</div>
-        <div className="dashboard__subtitle">
-          Welcome back, {userData?.firstname}!
+      {/* Welcome */}
+      <div className="dashboard-header">
+        <div>
+          <div className="welcome-title">
+            Welcome back, {user?.username}
+          </div>
+          <div className="welcome-sub">
+            Ready to keep pushing today?
+          </div>
         </div>
       </div>
 
-      <div className="dashboard__metrics">
-        <MetricCard
-          label="👤 Username"
-          value={userData?.username}
-          badgeType="neutral"
-        />
-        <MetricCard
-          label="📧 Email"
-          value={userData?.email?.split("@")[0]}
-          badge={userData?.email}
-          badgeType="neutral"
-        />
-        <MetricCard
-          label="🎭 Role"
-          value={userData?.role}
-          badgeType="neutral"
-        />
-        <MetricCard
-          label="🏆 Rank"
-          value="#1"
-          badge="copetitions"
-          badgeType="neutral"
-        />
-      </div>
+      {/* Rank Progress */}
+      {rankData && (
+        <div className="rank-card">
+          <div className="rank-top">
+            <div className="rank-name">
+              {formatRank(rankData.rank)}
+            </div>
+            <div className="rank-xp">
+              {rankData.totalXp} XP
+            </div>
+          </div>
 
-      <div className="dashboard__cards">
-        <Card>
-          <div className="profile-card__header">
-            <div className="profile-card__title">Profile Info</div>
-            <Badge variant="blue">Active</Badge>
+          <div className="rank-bar">
+            <div
+              className="rank-bar-fill"
+              style={{
+                width: `${rankData.progressPercent}%`,
+              }}
+            />
           </div>
-          <div className="profile-card__list">
-            {[
-              { label: "First Name", value: userData?.firstname },
-              { label: "Last Name", value: userData?.lastname },
-              { label: "Username", value: userData?.username },
-              { label: "Email", value: userData?.email },
-              { label: "Role", value: userData?.role },
-            ].map((item, i) => (
-              <div key={i} className="profile-card__row">
-                <span className="profile-card__label">{item.label}</span>
-                <span className="profile-card__value">{item.value}</span>
-              </div>
-            ))}
-          </div>
-        </Card>
 
-        <Card>
-          <div className="actions-card__title">Quick Actions</div>
-          <div className="actions-card__list">
-            <Button
-              className="actions-card__btn"
-              onClick={() => navigate("/workout")}
-            >
-              🏋️ Go to Workout Planner
-            </Button>
-            <Button
-              className="actions-card__btn"
-              onClick={() => navigate("/calories")}
-            >
-              🥗 Track Calories
-            </Button>
-            <Button
-              variant="ghost"
-              className="actions-card__btn"
-              onClick={() => navigate("/friends")}
-            >
-              👥 View Friends
-            </Button>
-            <Button
-              variant="ghost"
-              className="actions-card__btn"
-              onClick={() => navigate("/competitions")}
-            >
-              📊 Competitions
-            </Button>
+          <div className="rank-bottom">
+            <span>
+              Progress to next rank: {rankData.nextRankXp} XP
+            </span>
           </div>
-        </Card>
+        </div>
+      )}
+
+      {/* Main Grid */}
+      <div className="dashboard-grid">
+        {/* Calories */}
+        <div
+          className="card clickable"
+          onClick={() => (window.location.href = "/calories")}
+        >
+          <div className="card-title">Calories</div>
+          <div className="calorie-wheel">
+            <div className="calorie-inner">🔥</div>
+          </div>
+          <div className="card-hint">
+            Click the wheel to track calories
+          </div>
+        </div>
+
+        {/* Friends */}
+        <div
+          className="card clickable"
+          onClick={() => (window.location.href = "/friends")}
+        >
+          <div className="card-title">Friends</div>
+
+          <div className="mini-list">
+            {friends.length === 0 ? (
+              <div className="empty">No friends yet</div>
+            ) : (
+              friends.map((f, i) => (
+                <div key={i} className="mini-item">
+                  <div className="avatar">
+                    {f.friendUsername?.[0]?.toUpperCase()}
+                  </div>
+                  <span>{f.friendUsername}</span>
+                </div>
+              ))
+            )}
+          </div>
+
+          <div className="card-hint">View all friends →</div>
+        </div>
+
+        {/* Competitions */}
+        <div
+          className="card clickable"
+          onClick={() => (window.location.href = "/competitions")}
+        >
+          <div className="card-title">Competitions</div>
+
+          <div className="mini-list">
+            {competitions.length === 0 ? (
+              <div className="empty">No competitions</div>
+            ) : (
+              competitions.map((c, i) => (
+                <div key={i} className="mini-item">
+                  🏆 {c.name}
+                </div>
+              ))
+            )}
+          </div>
+
+          <div className="card-hint">View competitions →</div>
+        </div>
+
+        {/* Workout Plans */}
+        <div
+          className="card clickable"
+          onClick={() => (window.location.href = "/workout-planner")}
+        >
+          <div className="card-title">Workout Plans</div>
+
+          <div className="mini-list">
+            {plans.length === 0 ? (
+              <div className="empty">No plans yet</div>
+            ) : (
+              plans.map((p, i) => (
+                <div key={i} className="mini-item">
+                  📋 {p.name}
+                </div>
+              ))
+            )}
+          </div>
+
+          <div className="card-hint">Manage plans →</div>
+        </div>
       </div>
     </div>
   );

@@ -2,7 +2,7 @@ const variants = {
   green:  { background: 'var(--green-light)',  color: 'var(--green)' },
   orange: { background: 'var(--accent-light)', color: 'var(--accent-dark)' },
   blue:   { background: 'var(--blue-light)',   color: 'var(--blue)' },
-  gold:   { background: '#FFF3DC',             color: 'var(--gold)' },
+  LANDLORD_TIPPER:   { background: '#FFF3DC',             color: 'var(--LANDLORD_TIPPER)' },
 };
 
 export default function Badge({ children, variant = 'orange' }) {

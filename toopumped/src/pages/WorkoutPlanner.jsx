@@ -587,33 +587,31 @@ export default function WorkoutPlanner() {
   const [showCreatePlan, setShowCreatePlan] = useState(false);
   const [loading, setLoading] = useState(true);
 
+  const uid = user?.userId ?? user?.id;
+
   useEffect(() => {
-    if (!user) return;
-    console.debug("[WorkoutPlanner] user object:", user); // debug — ukloni kad radi
-    const uid = user.userId ?? user.id;
-    if (!uid) {
-      console.error("[WorkoutPlanner] userId is undefined! user =", user);
-      setLoading(false);
-      return;
-    }
+    if (!uid) return;
+
+    setLoading(true);
+
     api
       .get(`/workout-plan/user/${uid}`)
-      .then((r) => setPlans(r.data))
+      .then((r) => setPlans(r.data || []))
       .catch(console.error)
       .finally(() => setLoading(false));
-  }, [user]);
+  }, [uid]);
 
   const handleDeletePlan = async (planId, e) => {
     e.stopPropagation();
     try {
       await api.delete(`/workout-plan/${planId}`);
-      setPlans((prev) => prev.filter((p) => (p.id || p.wpId) !== planId));
+      setPlans((prev) =>
+        prev.filter((p) => (p.id ?? p.wpId) !== planId)
+      );
     } catch (err) {
       console.error(err);
     }
   };
-
-  const uid = user?.userId ?? user?.id;
 
   if (selectedPlan) {
     return (
@@ -629,7 +627,6 @@ export default function WorkoutPlanner() {
 
   return (
     <div className="workout-planner">
-      {/* Header */}
       <div className="wp-header">
         <div>
           <div className="page-title">Workout Planner</div>
@@ -638,7 +635,6 @@ export default function WorkoutPlanner() {
         <Button onClick={() => setShowCreatePlan(true)}>+ New Plan</Button>
       </div>
 
-      {/* Tabs */}
       <div className="tab-bar">
         <button
           className={`tab-btn${tab === "plans" ? " active" : ""}`}
@@ -654,15 +650,17 @@ export default function WorkoutPlanner() {
         </button>
       </div>
 
-      {/* Plans Tab */}
       {tab === "plans" && (
         <>
           {loading ? (
-            <div style={{ padding: 32, color: "var(--text2)" }}>Loading…</div>
+            <div style={{ padding: 32, color: "var(--text2)" }}>
+              Loading…
+            </div>
           ) : (
             <div className="plans-grid">
-              {plans.map((plan) => {
-                const planId = plan.id || plan.wpId;
+              {plans.map((plan, index) => {
+                const planId = plan.id ?? plan.wpId ?? `fallback-${index}`;
+
                 return (
                   <div
                     key={planId}
@@ -675,8 +673,12 @@ export default function WorkoutPlanner() {
                     >
                       ✕
                     </button>
+
                     <div className="plan-card-name">{plan.name}</div>
-                    <div className="plan-card-meta">{plan.duration} weeks</div>
+                    <div className="plan-card-meta">
+                      {plan.duration} weeks
+                    </div>
+
                     <div className="plan-card-footer">
                       <Button
                         variant="ghost"
@@ -689,33 +691,18 @@ export default function WorkoutPlanner() {
                 );
               })}
 
-              {/* Add new plan card */}
               <div
                 className="plan-card plan-card-add"
                 onClick={() => setShowCreatePlan(true)}
               >
                 <div className="plan-card-add-inner">
-                  <div style={{ fontSize: 28, marginBottom: 6 }}>+</div>
+                  <div style={{ fontSize: 28 }}>+</div>
                   <div style={{ fontSize: 13 }}>New Plan</div>
                 </div>
               </div>
             </div>
           )}
         </>
-      )}
-
-      {/* History Tab */}
-      {tab === "history" && <HistoryTab userId={uid} />}
-
-      {/* Modals */}
-      {showCreatePlan && (
-        <CreatePlanModal
-          userId={uid}
-          onClose={() => setShowCreatePlan(false)}
-          onCreated={(plan) => {
-            setPlans((prev) => [...prev, plan]);
-          }}
-        />
       )}
     </div>
   );

@@ -10,6 +10,7 @@ import Friends from "./pages/Friends";
 import Profile from "./pages/Profile";
 import Register from "./pages/Register";
 import Admin from "./pages/Admin";
+import WorkoutLibrary from "./pages/WorkoutLibrary";
 
 function ProtectedRoute({ children }) {
   const { user } = useAuth();
@@ -33,6 +34,7 @@ export default function App() {
           >
             <Route index element={<Dashboard />} />
             <Route path="workout" element={<WorkoutPlanner />} />
+            <Route path="workout-library" element={<WorkoutLibrary />} />
             <Route path="calories" element={<CalorieTracker />} />
             <Route path="competitions" element={<Competitions />} />
             <Route path="friends" element={<Friends />} />
