@@ -11,6 +11,7 @@ import Profile from "./pages/Profile";
 import Register from "./pages/Register";
 import Admin from "./pages/Admin";
 import WorkoutLibrary from "./pages/WorkoutLibrary";
+import GlobalLeaderboard from "./pages/GlobalLeaderboard";
 
 function ProtectedRoute({ children }) {
   const { user } = useAuth();
@@ -36,6 +37,7 @@ export default function App() {
             <Route path="workout" element={<WorkoutPlanner />} />
             <Route path="workout-library" element={<WorkoutLibrary />} />
             <Route path="calories" element={<CalorieTracker />} />
+            <Route path="/leaderboard" element={<GlobalLeaderboard />} />
             <Route path="competitions" element={<Competitions />} />
             <Route path="friends" element={<Friends />} />
             <Route path="profile" element={<Profile />} />

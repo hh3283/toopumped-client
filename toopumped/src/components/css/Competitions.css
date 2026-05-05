@@ -1,10 +1,5 @@
-/* =====================
-   Competitions.css
-   ===================== */
+.competitions-page {}
 
-.competitions-page { /* wrapper */ }
-
-/* ── Header ── */
 .comp-header {
   display: flex;
   justify-content: space-between;
@@ -25,7 +20,6 @@
   color: var(--text2);
 }
 
-/* ── Not competitor gate ── */
 .not-competitor {
   text-align: center;
   padding: 80px 20px;
@@ -39,7 +33,6 @@
 .nc-title { font-family: "Bebas Neue", sans-serif; font-size: 28px; letter-spacing: 1px; margin-bottom: 8px; }
 .nc-sub   { font-size: 14px; color: var(--text2); margin-bottom: 24px; }
 
-/* ── Tabs ── */
 .tab-bar {
   display: flex;
   gap: 4px;
@@ -86,7 +79,6 @@
   color: var(--accent);
 }
 
-/* ── Loading ── */
 .comp-loading {
   padding: 48px;
   text-align: center;
@@ -94,14 +86,12 @@
   font-size: 13px;
 }
 
-/* ── Competition Grid ── */
 .comp-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
   gap: 14px;
 }
 
-/* ── Competition Card ── */
 .comp-card {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -120,10 +110,54 @@
   transform: translateY(-1px);
 }
 
+.comp-card-create {
+  align-items: center;
+  justify-content: center;
+  border: 2px dashed var(--border);
+  background: transparent;
+  box-shadow: none;
+  min-height: 140px;
+  gap: 10px;
+}
+
+.comp-card-create:hover {
+  border-color: var(--accent);
+  background: var(--accent-light);
+  box-shadow: none;
+  transform: translateY(-1px);
+}
+
+.create-card-icon {
+  font-size: 28px;
+  color: var(--text2);
+  line-height: 1;
+  transition: color 0.15s;
+}
+
+.comp-card-create:hover .create-card-icon {
+  color: var(--accent);
+}
+
+.create-card-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text2);
+  transition: color 0.15s;
+}
+
+.comp-card-create:hover .create-card-label {
+  color: var(--accent-dark);
+}
+
 .comp-card-top {
   display: flex;
   align-items: center;
   justify-content: space-between;
+}
+
+.comp-card-admin {
+  display: flex;
+  gap: 4px;
 }
 
 .comp-card-name {
@@ -150,7 +184,6 @@
   margin-top: 4px;
 }
 
-/* ── Status Pill ── */
 .status-pill {
   display: inline-block;
   font-size: 10px;
@@ -165,8 +198,43 @@
 .status-upcoming { background: var(--blue-light); color: var(--blue); }
 .status-ended    { background: var(--bg2); color: var(--text2); }
 
-/* ── Detail Header ── */
-.comp-detail { /* wrapper */ }
+.comp-empty-cta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 80px 20px;
+  background: var(--surface);
+  border: 2px dashed var(--border);
+  border-radius: var(--radius);
+  gap: 10px;
+}
+
+.cta-icon  { font-size: 48px; }
+.cta-title { font-family: "Bebas Neue", sans-serif; font-size: 24px; letter-spacing: 1px; color: var(--text); }
+.cta-sub   { font-size: 13px; color: var(--text2); max-width: 300px; line-height: 1.5; }
+
+.cta-btn {
+  margin-top: 8px;
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 10px 24px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  transition: opacity 0.15s, transform 0.15s;
+}
+
+.cta-btn:hover {
+  opacity: 0.88;
+  transform: translateY(-1px);
+}
+
+.comp-detail {}
 
 .detail-header {
   display: flex;
@@ -192,7 +260,48 @@
 
 .back-btn:hover { background: var(--bg); color: var(--text); }
 
-/* ── My rank badge ── */
+.admin-actions {
+  display: flex;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.admin-btn {
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: opacity 0.15s;
+}
+
+.admin-btn:hover { opacity: 0.8; }
+
+.admin-btn-edit   { background: var(--accent-light); color: var(--accent-dark); }
+.admin-btn-delete { background: #fee2e2; color: #dc2626; }
+
+.delete-confirm {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  background: #fee2e2;
+  border: 1px solid #fca5a5;
+  border-radius: var(--radius-sm);
+  padding: 12px 16px;
+  font-size: 13px;
+  color: #991b1b;
+  margin-bottom: 16px;
+}
+
+.delete-confirm-btns {
+  display: flex;
+  gap: 8px;
+}
+
 .my-rank-badge {
   background: var(--accent-light);
   border: 1px solid var(--accent);
@@ -204,7 +313,6 @@
   margin-top: 4px;
 }
 
-/* ── My stats bar ── */
 .my-stats-bar {
   display: flex;
   background: var(--surface);
@@ -213,7 +321,6 @@
   box-shadow: var(--shadow);
   padding: 16px 24px;
   margin-bottom: 16px;
-  gap: 0;
 }
 
 .my-stats-item {
@@ -243,7 +350,6 @@
   margin: 0 24px;
 }
 
-/* ── Leaderboard card ── */
 .leaderboard-card {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -267,7 +373,6 @@
   flex-direction: column;
 }
 
-/* ── Leaderboard row ── */
 .lb-row {
   display: flex;
   align-items: center;
@@ -279,10 +384,7 @@
 
 .lb-row:last-child { border-bottom: none; }
 .lb-row:hover { background: var(--bg2); }
-
-.lb-row-me {
-  background: var(--accent-light) !important;
-}
+.lb-row-me { background: var(--accent-light) !important; }
 
 .lb-rank {
   font-size: 16px;
@@ -344,7 +446,6 @@
   letter-spacing: 0.5px;
 }
 
-/* ── Empty state ── */
 .empty-state {
   text-align: center;
   padding: 60px 20px;
@@ -355,7 +456,6 @@
 .empty-title { font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 6px; }
 .empty-sub   { font-size: 13px; }
 
-/* ── Form error ── */
 .form-error {
   font-size: 12px;
   color: #dc2626;
@@ -363,3 +463,121 @@
   background: #fee2e2;
   border-radius: var(--radius-sm);
 }
+
+.cmodal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.cmodal {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.3);
+  width: 100%;
+  max-width: 480px;
+  display: flex;
+  flex-direction: column;
+}
+
+.cmodal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.cmodal-title {
+  font-family: "Bebas Neue", sans-serif;
+  font-size: 22px;
+  letter-spacing: 1px;
+  color: var(--text);
+}
+
+.cmodal-close {
+  background: none;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  color: var(--text2);
+  padding: 4px;
+  transition: color 0.15s;
+}
+
+.cmodal-close:hover { color: var(--text); }
+
+.cmodal-body {
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.cmodal-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text2);
+  margin-bottom: 6px;
+}
+
+.cmodal-input {
+  width: 100%;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 9px 12px;
+  font-size: 14px;
+  color: var(--text);
+  font-family: inherit;
+  transition: border-color 0.15s;
+  box-sizing: border-box;
+}
+
+.cmodal-input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.cmodal-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.cmodal-field {
+  display: flex;
+  flex-direction: column;
+}
+
+.cmodal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 16px 24px 20px;
+  border-top: 1px solid var(--border);
+}
+
+.cmodal-cancel {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 7px 16px;
+  font-size: 13px;
+  cursor: pointer;
+  color: var(--text2);
+  font-family: inherit;
+  transition: all 0.15s;
+}
+
+.cmodal-cancel:hover { background: var(--bg2); color: var(--text); }

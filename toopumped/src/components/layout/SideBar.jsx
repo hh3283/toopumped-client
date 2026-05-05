@@ -37,6 +37,12 @@ const navItems = [
     roles: ["COMPETITOR", "ADMIN"],
     items: [
       {
+        to: "/leaderboard",
+        label: "Leaderboard",
+        icon: "🌍📊",
+        roles: ["COMPETITOR", "ADMIN"],
+      },
+      {
         to: "/competitions",
         label: "Competitions",
         icon: "📊",
